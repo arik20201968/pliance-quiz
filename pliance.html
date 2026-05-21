@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Pliance, Tracking y Augmenting</title>
+    <style>
+        :root {
+            /* Tema claro */
+            --bg-primary: #f4f7f6;
+            --bg-secondary: #ffffff;
+            --bg-accent: #e8f4fd;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --border-color: #eeeeee;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --hover-bg: #f0f0f0;
+            --primary-color: #3498db;
+            --primary-hover: #2980b9;
+            --success-color: #27ae60;
+            --success-bg: #eafaf1;
+            --error-color: #e74c3c;
+            --error-bg: #fdf2f2;
+            --warning-color: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            /* Tema oscuro */
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-accent: #1e3a5f;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --hover-bg: #3a3a3a;
+            --primary-color: #4a9eff;
+            --primary-hover: #357abd;
+            --success-color: #2ecc71;
+            --success-bg: #1e4d2b;
+            --error-color: #e74c3c;
+            --error-bg: #4a1e1e;
+            --warning-color: #f39c12;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 10px;
+            margin: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .theme-toggle {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow);
+            transition: background-color 0.3s ease;
+        }
+
+        h1 {
+            color: var(--text-primary);
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+        }
+
+        .intro {
+            background: var(--bg-accent);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: block;
+            font-size: 1.1em;
+            color: var(--text-primary);
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .options li {
+            margin-bottom: 10px;
+        }
+
+        label {
+            cursor: pointer;
+            display: block;
+            padding: 12px 15px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        label:hover {
+            background: var(--hover-bg);
+            transform: translateX(5px);
+        }
+
+        label:has(input:checked) {
+            border-color: var(--primary-color);
+            background: var(--bg-accent);
+        }
+
+        input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: var(--primary-color);
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            background: #95a5a6;
+        }
+
+        .reset-btn:hover {
+            background: #7f8c8d;
+        }
+
+        .shuffle-btn {
+            background: #9b59b6;
+        }
+
+        .shuffle-btn:hover {
+            background: #8e44ad;
+        }
+
+        #result {
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: 12px;
+            display: none;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .correct {
+            color: var(--success-color);
+            background: var(--success-bg);
+            border: 2px solid var(--success-color);
+        }
+
+        .incorrect {
+            color: var(--error-color);
+            background: var(--error-bg);
+            border: 2px solid var(--error-color);
+        }
+
+        .correct-answer {
+            color: var(--success-color);
+            font-size: 0.9em;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        .incorrect-answer {
+            color: var(--error-color);
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+
+        .warning-answer {
+            color: var(--warning-color);
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+
+            .container {
+                padding: 15px;
+                margin: 5px;
+                border-radius: 8px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+                padding-bottom: 10px;
+            }
+
+            .intro {
+                padding: 15px;
+                font-size: 0.9em;
+            }
+
+            .question-text {
+                font-size: 1rem;
+            }
+
+            label {
+                padding: 10px 12px;
+                font-size: 0.95em;
+            }
+
+            button {
+                padding: 12px 20px;
+                font-size: 14px;
+                min-width: 100px;
+            }
+
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .header {
+                justify-content: center;
+            }
+
+            #result {
+                font-size: 1.1em;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            .intro {
+                padding: 12px;
+            }
+
+            label {
+                padding: 8px 10px;
+            }
+
+            button {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+
+        /* Mejoras de accesibilidad */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus styles para accesibilidad */
+        button:focus,
+        input:focus,
+        label:focus-within {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Loading state */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading button {
+            position: relative;
+        }
+
+        .loading button::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div></div> <!-- Spacer para centrar el toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Cambiar tema">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text">Modo Oscuro</span>
+    </button>
+</div>
+
+<div class="container">
+    <h1>Test: Conducta Gobernada por Reglas</h1>
+    <div class="intro">
+        Este examen evalúa tus conocimientos sobre <strong>Pliance</strong> (cumplimiento social), <strong>Tracking</strong> (rastreo de contingencias naturales) y <strong>Augmenting</strong> (modificación de valor). 
+        <br><br><em>Instrucciones: Selecciona la mejor opción para cada pregunta.</em>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <form id="quizForm">
+        <!-- Las preguntas se generarán dinámicamente aquí -->
+        <div id="questions-container"></div>
+
+        <div class="btn-container">
+            <button type="button" onclick="evaluateQuiz()" id="evaluateBtn">
+                Evaluar Examen
+            </button>
+            <button type="button" onclick="shuffleAnswers()" class="shuffle-btn" id="shuffleBtn" title="Mezclar respuestas sin perder progreso">
+                🔀 Mezclar
+            </button>
+            <button type="button" onclick="resetQuiz()" class="reset-btn" id="resetBtn">
+                Reiniciar
+            </button>
+        </div>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    const questions = [
+        { q: "¿Cuál es la característica principal del Pliance?", a: ["Las consecuencias son mediadas socialmente.", "Las consecuencias son naturales del entorno.", "No hay consecuencias.", "Se basa en la experiencia directa."], c: 0 },
+        { q: "En el Tracking, ¿de qué dependen las consecuencias de seguir la regla?", a: ["De la aprobación del hablante.", "De la interacción directa con el entorno físico.", "Del castigo social.", "De la cultura vigente."], c: 1 },
+        { q: "¿Cómo se llama a la regla específica que evoca el Pliance?", a: ["Track", "Augmental", "Ply", "Mand"], c: 2 },
+        { q: "Si un niño estudia para que sus padres no le regañen, esto es un ejemplo de:", a: ["Tracking", "Pliance", "Augmenting", "Condicionamiento Clásico"], c: 1 },
+        { q: "Si un niño estudia porque quiere aprender y disfruta el conocimiento, esto es:", a: ["Pliance", "Tracking", "Refuerzo arbitrario", "Castigo negativo"], c: 1 },
+        { q: "¿Qué término describe el Pliance como una forma de rebeldía o hacer lo contrario a la regla solo por oposición?", a: ["Tracking inverso", "Augmenting negativo", "Contra-pliance", "Desobediencia funcional"], c: 2 },
+        { q: "El 'Augmenting' se define como una regla que:", a: ["Describe el camino a seguir.", "Cambia las propiedades reforzantes o aversivas de un estímulo.", "Asegura el castigo social.", "Sustituye la experiencia por lenguaje."], c: 1 },
+        { q: "Un ejemplo de Augmenting es:", a: ["'Ponte el abrigo o te castigo'.", "'Si giras a la derecha, llegas antes'.", "'Reciclar salvará la vida de miles de animales'.", "'Haz silencio en clase'."], c: 2 },
+        { q: "¿Cuál de estos es un riesgo clínico de un Pliance excesivo?", a: ["Demasiada creatividad.", "Insensibilidad a las contingencias naturales del entorno.", "Exceso de autonomía.", "Pérdida de la capacidad de hablar."], c: 1 },
+        { q: "En la Terapia de Aceptación y Compromiso (ACT), ¿qué se busca fomentar?", a: ["Más Pliance hacia el terapeuta.", "Eliminar todas las reglas.", "Pasar del Pliance a conductas basadas en valores (Tracking/Augmenting).", "Aprender a obedecer mejor."], c: 2 },
+        { q: "¿Qué es el 'Tracking inefectivo'?", a: ["Seguir una regla que no se ajusta a la realidad física.", "Seguir una regla para complacer a otros.", "Ignorar al terapeuta.", "Seguir una regla moral."], c: 0 },
+        { q: "La frase 'Si no saludas a tu tía, quedas como un maleducado' fomenta:", a: ["Tracking", "Augmenting", "Pliance", "Moldeamiento"], c: 2 },
+        { q: "¿Qué tipo de Augmenting crea una función reforzante para un estímulo previamente neutro?", a: ["Augmenting Motivacional", "Augmenting Formativo", "Augmenting Secuencial", "Pliance Relacional"], c: 1 },
+        { q: "La 'Insensibilidad a la Experiencia' es más común en:", a: ["El Pliance rígido.", "El Tracking flexible.", "La conducta moldeada por contingencias.", "El aprendizaje por ensayo y error."], c: 0 },
+        { q: "¿Por qué el Pliance es necesario en la infancia?", a: ["Para que los niños sean sumisos.", "Para facilitar la socialización y el aprendizaje de normas de seguridad.", "Para evitar que aprendan Tracking.", "No es necesario."], c: 1 },
+        { q: "Si sigo las instrucciones de un GPS para llegar a un destino, estoy haciendo:", a: ["Pliance", "Augmenting", "Tracking", "Metacognición"], c: 2 },
+        { q: "Si sigo las instrucciones del GPS solo porque mi acompañante me está mirando y no quiero discutir, es:", a: ["Pliance", "Tracking", "Evitación experiencial", "Augmenting"], c: 0 },
+        { q: "¿Qué sucede con el control de la conducta en el Pliance?", a: ["Es controlado por el ambiente físico.", "Es controlado por la comunidad verbal o el emisor de la regla.", "No hay control.", "Es puramente biológico."], c: 1 },
+        { q: "¿Cuál es el objetivo de un 'Ply'?", a: ["Instruir sobre hechos.", "Modificar la motivación.", "Generar cumplimiento basado en consecuencias sociales.", "Describir el mundo."], c: 2 },
+        { q: "Un paciente que hace las tareas de terapia solo para que el terapeuta le felicite muestra:", a: ["Compromiso real", "Pliance", "Tracking", "Transferencia"], c: 1 },
+        { q: "El concepto de 'Conducta Gobernada por Reglas' fue introducido originalmente por:", a: ["Sigmund Freud", "B.F. Skinner", "Steven Hayes", "Aaron Beck"], c: 1 },
+        { q: "¿Qué componente es clave para que el Pliance ocurra?", a: ["Una red de WiFi.", "Una historia de refuerzo por obedecer y castigo por desobedecer.", "Conocimiento profundo de física.", "Falta de lenguaje."], c: 1 },
+        { q: "El Augmenting Motivacional:", a: ["Crea nuevos valores.", "Altera momentáneamente el valor de un reforzador ya existente.", "Es una forma de Pliance.", "Solo funciona con castigos."], c: 1 },
+        { q: "¿Cuál es la diferencia fundamental entre Pliance y Tracking?", a: ["El Pliance es verbal y el Tracking no.", "El Pliance busca aprobación social; el Tracking busca resultados naturales.", "El Pliance es malo y el Tracking es bueno siempre.", "No hay diferencia."], c: 1 },
+        { q: "La frase 'Hago esto porque es lo que un hombre de honor debe hacer' es un ejemplo de:", a: ["Pliance (regla social internalizada)", "Tracking físico", "Conducta refleja", "Pliance primario"], c: 0 },
+        { q: "Cuando una regla nos hace ignorar que algo nos duele o nos hace daño, hablamos de:", a: ["Flexibilidad", "Rigidez derivada del seguimiento de reglas", "Efecto Placebo", "Tracking puro"], c: 1 },
+        { q: "Un 'Track' es una regla que:", a: ["Amenaza con multas.", "Promete premios divinos.", "Funciona como un mapa de las contingencias ambientales.", "Halaga al oyente."], c: 2 },
+        { q: "¿Qué tipo de regla es: 'Si tocas el fuego, te quemas'?", a: ["Ply", "Track", "Augmental", "Mand"], c: 1 },
+        { q: "¿Qué tipo de regla es: 'Sé un buen chico y termina la sopa'?", a: ["Ply", "Track", "Augmental", "Tacto"], c: 0 },
+        { q: "Para reducir el Pliance disfuncional, se suele trabajar en:", a: ["Aumentar el castigo.", "Fomentar el contacto con las consecuencias naturales y los valores propios.", "Dar más reglas.", "Ignorar al paciente."], c: 1 }
+    ];
+
+    // Variables globales
+    let currentTheme = 'light';
+    let answeredQuestions = 0;
+    let shuffledQuestions = [];
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTheme();
+        shuffleQuestions();
+        loadQuestions();
+        updateProgress();
+    });
+
+    // Función para mezclar array (Fisher-Yates shuffle)
+    function shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
+    // Mezclar las opciones de respuesta manteniendo la referencia correcta
+    function shuffleQuestions() {
+        shuffledQuestions = questions.map(question => {
+            // Crear array de opciones con sus índices originales
+            const optionsWithIndex = question.a.map((option, index) => ({
+                text: option,
+                originalIndex: index
+            }));
+            
+            // Mezclar las opciones
+            const shuffledOptions = shuffleArray(optionsWithIndex);
+            
+            // Encontrar el nuevo índice de la respuesta correcta
+            const newCorrectIndex = shuffledOptions.findIndex(
+                option => option.originalIndex === question.c
+            );
+            
+            return {
+                q: question.q,
+                a: shuffledOptions.map(option => option.text),
+                c: newCorrectIndex,
+                originalCorrect: question.c
+            };
+        });
+    }
+
+    // Gestión del tema
+    function toggleTheme() {
+        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+        applyTheme();
+        saveTheme();
+    }
+
+    function applyTheme() {
+        const body = document.body;
+        const themeIcon = document.getElementById('theme-icon');
+        const themeText = document.getElementById('theme-text');
+        
+        if (currentTheme === 'dark') {
+            body.setAttribute('data-theme', 'dark');
+            themeIcon.textContent = '☀️';
+            themeText.textContent = 'Modo Claro';
+        } else {
+            body.removeAttribute('data-theme');
+            themeIcon.textContent = '🌙';
+            themeText.textContent = 'Modo Oscuro';
+        }
+    }
+
+    function saveTheme() {
+        try {
+            localStorage.setItem('quiz-theme', currentTheme);
+        } catch (e) {
+            console.log('No se pudo guardar el tema');
+        }
+    }
+
+    function loadTheme() {
+        try {
+            const savedTheme = localStorage.getItem('quiz-theme');
+            if (savedTheme) {
+                currentTheme = savedTheme;
+            } else {
+                // Detectar preferencia del sistema
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    currentTheme = 'dark';
+                }
+            }
+            applyTheme();
+        } catch (e) {
+            console.log('No se pudo cargar el tema guardado');
+        }
+    }
+
+    // Gestión de preguntas
+    function loadQuestions() {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = ''; // Limpiar contenido previo
+        
+        shuffledQuestions.forEach((qData, index) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question';
+            qDiv.innerHTML = `
+                <span class="question-text">${index + 1}. ${qData.q}</span>
+                <ul class="options">
+                    ${qData.a.map((opt, i) => `
+                        <li>
+                            <label>
+                                <input type="radio" name="q${index}" value="${i}" onchange="updateProgress()">
+                                ${opt}
+                            </label>
+                        </li>
+                    `).join('')}
+                </ul>
+                <div id="feedback${index}"></div>
+            `;
+            container.appendChild(qDiv);
+        });
+    }
+
+    // Actualizar barra de progreso
+    function updateProgress() {
+        const totalQuestions = shuffledQuestions.length;
+        answeredQuestions = 0;
+        
+        for (let i = 0; i < totalQuestions; i++) {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            if (selected) {
+                answeredQuestions++;
+            }
+        }
+        
+        const progressPercent = (answeredQuestions / totalQuestions) * 100;
+        const progressFill = document.getElementById('progressFill');
+        if (progressFill) {
+            progressFill.style.width = progressPercent + '%';
+        }
+    }
+
+    // Evaluación del quiz
+    function evaluateQuiz() {
+        const evaluateBtn = document.getElementById('evaluateBtn');
+        const container = document.querySelector('.container');
+        
+        // Mostrar estado de carga
+        evaluateBtn.classList.add('loading');
+        evaluateBtn.textContent = 'Evaluando...';
+        
+        // Simular un pequeño delay para mejor UX
+        setTimeout(() => {
+            let score = 0;
+            let unanswered = 0;
+            
+            shuffledQuestions.forEach((qData, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const feedback = document.getElementById(`feedback${index}`);
+                feedback.innerHTML = ""; 
+                
+                if (selected) {
+                    if (parseInt(selected.value) === qData.c) {
+                        score++;
+                        feedback.innerHTML = `<span class="correct-answer">✓ Correcto</span>`;
+                    } else {
+                        feedback.innerHTML = `<span class="incorrect-answer">✗ Incorrecto. La respuesta correcta era: <strong>${qData.a[qData.c]}</strong></span>`;
+                    }
+                } else {
+                    unanswered++;
+                    feedback.innerHTML = `<span class="warning-answer">⚠ Sin responder. La respuesta correcta era: <strong>${qData.a[qData.c]}</strong></span>`;
+                }
+            });
+
+            // Mostrar resultados
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            const percent = Math.round((score / shuffledQuestions.length) * 100);
+            resultDiv.className = percent >= 70 ? 'correct' : 'incorrect';
+            
+            let resultMessage = `Tu puntuación: ${score} / ${shuffledQuestions.length} (${percent}%)`;
+            if (unanswered > 0) {
+                resultMessage += `<br><small>Preguntas sin responder: ${unanswered}</small>`;
+            }
+            
+            if (percent >= 90) {
+                resultMessage += "<br>¡Excelente! Dominas perfectamente los conceptos.";
+            } else if (percent >= 70) {
+                resultMessage += "<br>¡Muy bien! Tienes un buen dominio del tema.";
+            } else if (percent >= 50) {
+                resultMessage += "<br>Necesitas repasar algunos conceptos clave.";
+            } else {
+                resultMessage += "<br>Te recomendamos estudiar más las diferencias entre reglas.";
+            }
+            
+            resultDiv.innerHTML = resultMessage;
+            
+            // Scroll suave al resultado
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Restaurar botón
+            evaluateBtn.classList.remove('loading');
+            evaluateBtn.textContent = 'Evaluar Examen';
+            
+        }, 800);
+    }
+
+    // Mezclar solo las respuestas sin perder el progreso
+    function shuffleAnswers() {
+        // Guardar las respuestas actuales
+        const currentAnswers = {};
+        for (let i = 0; i < shuffledQuestions.length; i++) {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            if (selected) {
+                // Guardar el texto de la respuesta seleccionada
+                currentAnswers[i] = shuffledQuestions[i].a[parseInt(selected.value)];
+            }
+        }
+        
+        // Mezclar las preguntas nuevamente
+        shuffleQuestions();
+        loadQuestions();
+        
+        // Restaurar las respuestas seleccionadas
+        for (let i = 0; i < shuffledQuestions.length; i++) {
+            if (currentAnswers[i]) {
+                // Encontrar el nuevo índice de la respuesta previamente seleccionada
+                const newIndex = shuffledQuestions[i].a.findIndex(option => option === currentAnswers[i]);
+                if (newIndex !== -1) {
+                    const radioButton = document.querySelector(`input[name="q${i}"][value="${newIndex}"]`);
+                    if (radioButton) {
+                        radioButton.checked = true;
+                    }
+                }
+            }
+        }
+        
+        // Actualizar progreso
+        updateProgress();
+        
+        // Mostrar mensaje temporal
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const originalText = shuffleBtn.innerHTML;
+        shuffleBtn.innerHTML = '✓ Mezclado';
+        shuffleBtn.style.background = '#27ae60';
+        
+        setTimeout(() => {
+            shuffleBtn.innerHTML = originalText;
+            shuffleBtn.style.background = '';
+        }, 1500);
+    }
+
+    // Reiniciar quiz
+    function resetQuiz() {
+        // Confirmar acción
+        if (answeredQuestions > 0) {
+            if (!confirm('¿Estás seguro de que quieres reiniciar el examen? Se perderán todas las respuestas.')) {
+                return;
+            }
+        }
+        
+        // Resetear formulario
+        document.getElementById('quizForm').reset();
+        document.getElementById('result').style.display = 'none';
+        
+        // Limpiar feedback
+        const feedbacks = document.querySelectorAll('[id^="feedback"]');
+        feedbacks.forEach(f => f.innerHTML = "");
+        
+        // Mezclar preguntas nuevamente y recargar
+        shuffleQuestions();
+        loadQuestions();
+        
+        // Resetear progreso
+        answeredQuestions = 0;
+        updateProgress();
+        
+        // Scroll al inicio
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Detectar cambios en preferencia de tema del sistema
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+            if (!localStorage.getItem('quiz-theme')) {
+                currentTheme = e.matches ? 'dark' : 'light';
+                applyTheme();
+            }
+        });
+    }
+
+    // Atajos de teclado
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + Enter para evaluar
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            evaluateQuiz();
+        }
+        
+        // Ctrl/Cmd + R para reiniciar (prevenir recarga de página)
+        if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+            e.preventDefault();
+            resetQuiz();
+        }
+        
+        // T para cambiar tema
+        if (e.key === 't' || e.key === 'T') {
+            if (!e.target.matches('input, textarea')) {
+                e.preventDefault();
+                toggleTheme();
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
