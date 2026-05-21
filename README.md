@@ -77,7 +77,11 @@ El quiz cubre los siguientes conceptos:
 
 ## 🚀 Uso
 
-1. Abre `pliance.html` en cualquier navegador moderno
+### Online (GitHub Pages)
+Accede directamente al quiz en: **https://arik20201968.github.io/pliance-quiz/**
+
+### Local
+1. Abre `index.html` en cualquier navegador moderno
 2. Lee las instrucciones y responde las preguntas
 3. Usa el botón "🔀 Mezclar" para reordenar opciones
 4. Evalúa tu conocimiento con el botón "Evaluar Examen"

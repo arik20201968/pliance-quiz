@@ -21,8 +21,10 @@ git push -u origin main
 ### 3. Acceder al sitio
 Tu quiz estará disponible en:
 ```
-https://TU_USUARIO.github.io/TU_REPOSITORIO/pliance.html
+https://TU_USUARIO.github.io/TU_REPOSITORIO/
 ```
+
+**Nota:** GitHub Pages busca automáticamente un archivo `index.html` como página principal.
 
 ## Otros Servicios de Hosting
 
